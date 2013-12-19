@@ -3,6 +3,10 @@ node-dxt
 
 Node.JS bindings for the squish DXT compression/decompression library.
 
+```
+$ npm install dxt
+```
+
 # dxt.compress(input, width, height [, flags])
 Compress `input` buffer. Returns a buffer.
 
