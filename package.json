@@ -1,0 +1,26 @@
+{
+  "name": "node-dxt",
+  "version": "0.0.1",
+  "description": "Bindings for the squish DXT compression/decompression library",
+  "author": "Alexandre Kirszenberg <a.kirszenberg@gmail.com>",
+  "keywords": [
+    "dxt",
+    "squish",
+    "compression"
+  ],
+
+	"repository": {
+    "type": "git",
+    "url": "git://github.com/morhaus/node-dxt.git"
+  },
+
+  "main": "index.js",
+
+  "engines": {
+    "node": ">=0.10.0"
+  },
+
+  "dependencies": {
+    "bindings": "~1.1.1"
+  }
+}
