@@ -4,8 +4,9 @@
 using namespace v8;
 using namespace node;
 
-Handle<Value> dxt_decompress(const Arguments &args) {
-  HandleScope scope;
+void dxt_decompress(const FunctionCallbackInfo<Value> &args) {
+  Isolate* isolate = Isolate::GetCurrent();
+  HandleScope scope(isolate);
 
   Handle<Object> input_buffer = args[0]->ToObject();
   int width = args[1]->Int32Value();
@@ -13,18 +14,18 @@ Handle<Value> dxt_decompress(const Arguments &args) {
   int flags = args[3]->Int32Value();
 
   int output_len = width * height * 4;
-  Buffer *output_buffer = Buffer::New(output_len);
+  v8::Local<v8::Object> output_buffer = Buffer::New(isolate, output_len);
 
   squish::u8 *input = (squish::u8*) Buffer::Data(input_buffer);
   squish::u8 *output = (squish::u8*) Buffer::Data(output_buffer);
 
   squish::DecompressImage(output, width, height, input, flags);
 
-  return scope.Close(output_buffer->handle_);
+  args.GetReturnValue().Set(output_buffer);
 }
-
-Handle<Value> dxt_compress(const Arguments &args) {
-  HandleScope scope;
+void dxt_compress(const FunctionCallbackInfo<Value> &args) {
+  Isolate* isolate = Isolate::GetCurrent();
+  HandleScope scope(isolate);
 
   Handle<Object> input_buffer = args[0]->ToObject();
   int width = args[1]->Int32Value();
@@ -32,19 +33,18 @@ Handle<Value> dxt_compress(const Arguments &args) {
   int flags = args[3]->Int32Value();
 
   int output_len = squish::GetStorageRequirements(width, height, flags);
-  Buffer *output_buffer = Buffer::New(output_len);
+  v8::Local<v8::Object> output_buffer = Buffer::New(isolate, output_len);
 
   squish::u8 *input = (squish::u8*) Buffer::Data(input_buffer);
   squish::u8 *output = (squish::u8*) Buffer::Data(output_buffer);
 
   squish::CompressImage(input, width, height, output, flags);
 
-  return scope.Close(output_buffer->handle_);
+  args.GetReturnValue().Set(output_buffer);
 }
 
-void init (Handle<Object> exports) {
-  HandleScope scope;
-  exports->Set(String::New("decompress"), FunctionTemplate::New(dxt_decompress)->GetFunction());
-  exports->Set(String::New("compress"), FunctionTemplate::New(dxt_compress)->GetFunction());
+void InitAll (Handle<Object> exports) {
+  NODE_SET_METHOD(exports, "decompress", dxt_decompress);
+  NODE_SET_METHOD(exports, "compress", dxt_compress);
 }
-NODE_MODULE(dxt, init)
+NODE_MODULE(dxt, InitAll)
