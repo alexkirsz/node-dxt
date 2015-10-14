@@ -1,50 +1,47 @@
+#include <nan.h>
+#include "dxt.h"  // NOLINT(build/include)
 #include <node_buffer.h>
 #include "squish/squish.h"
-
 using namespace v8;
 using namespace node;
 
-Handle<Value> dxt_decompress(const Arguments &args) {
-  HandleScope scope;
+NAN_METHOD(dxt_decompress) {
+  Nan::HandleScope scope;
 
-  Handle<Object> input_buffer = args[0]->ToObject();
-  int width = args[1]->Int32Value();
-  int height = args[2]->Int32Value();
-  int flags = args[3]->Int32Value();
+  Local<Object> input_buffer = info[0]->ToObject();
+  int width = info[1]->Int32Value();
+  int height = info[2]->Int32Value();
+  int flags = info[3]->Int32Value();
 
   int output_len = width * height * 4;
-  Buffer *output_buffer = Buffer::New(output_len);
+  char data[output_len];
 
   squish::u8 *input = (squish::u8*) Buffer::Data(input_buffer);
-  squish::u8 *output = (squish::u8*) Buffer::Data(output_buffer);
+  squish::u8 *output = (squish::u8*) data;
 
   squish::DecompressImage(output, width, height, input, flags);
 
-  return scope.Close(output_buffer->handle_);
+  MaybeLocal<Object> buffer = Nan::CopyBuffer(data, output_len);
+  info.GetReturnValue().Set(buffer.ToLocalChecked());
 }
 
-Handle<Value> dxt_compress(const Arguments &args) {
-  HandleScope scope;
+NAN_METHOD(dxt_compress) {
+  Nan::HandleScope scope;
 
-  Handle<Object> input_buffer = args[0]->ToObject();
-  int width = args[1]->Int32Value();
-  int height = args[2]->Int32Value();
-  int flags = args[3]->Int32Value();
+  Local<Object> input_buffer = info[0]->ToObject();
+  int width = info[1]->Int32Value();
+  int height = info[2]->Int32Value();
+  int flags = info[3]->Int32Value();
 
   int output_len = squish::GetStorageRequirements(width, height, flags);
-  Buffer *output_buffer = Buffer::New(output_len);
+  char data[output_len];
 
   squish::u8 *input = (squish::u8*) Buffer::Data(input_buffer);
-  squish::u8 *output = (squish::u8*) Buffer::Data(output_buffer);
+  squish::u8 *output = (squish::u8*) data;
 
   squish::CompressImage(input, width, height, output, flags);
 
-  return scope.Close(output_buffer->handle_);
+  MaybeLocal<Object> buffer = Nan::CopyBuffer(data, output_len);
+  info.GetReturnValue().Set(buffer.ToLocalChecked());
 }
 
-void init (Handle<Object> exports) {
-  HandleScope scope;
-  exports->Set(String::New("decompress"), FunctionTemplate::New(dxt_decompress)->GetFunction());
-  exports->Set(String::New("compress"), FunctionTemplate::New(dxt_compress)->GetFunction());
-}
-NODE_MODULE(dxt, init)

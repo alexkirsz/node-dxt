@@ -1,4 +1,5 @@
 {
+
   "targets": [
     {
       "target_name": "dxt",
@@ -12,9 +13,10 @@
         "src/squish/rangefit.cpp",
         "src/squish/singlecolourfit.cpp",
         "src/squish/squish.cpp",
-        "src/dxt.cc"
+        "src/dxt.cc",
+        "src/addon.cc"
       ],
-      "include_dirs": ["src/squish"],
+      "include_dirs": ["<!(node -e \"require('nan')\")","src/squish"],
       "cflags!": ["-fno-exceptions"],
       "cflags_cc!": ["-fno-exceptions"],
       "conditions": [
