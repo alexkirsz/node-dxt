@@ -1,4 +1,5 @@
 {
+
   "targets": [
     {
       "target_name": "dxt",
@@ -14,7 +15,7 @@
         "src/squish/squish.cpp",
         "src/dxt.cc"
       ],
-      "include_dirs": ["src/squish"],
+      "include_dirs": ["<!(node -e \"require('nan')\")","src/squish"],
       "cflags!": ["-fno-exceptions"],
       "cflags_cc!": ["-fno-exceptions"],
       "conditions": [

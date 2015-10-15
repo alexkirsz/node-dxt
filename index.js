@@ -1,4 +1,4 @@
-var dxt = require('bindings')('dxt');
+var dxt = require('./build/Release/dxt');
 
 var flags = {
   kDxt1: 1 << 0,
