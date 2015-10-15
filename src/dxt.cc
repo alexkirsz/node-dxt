@@ -10,7 +10,6 @@ using v8::Object;
 using v8::String;
 using Nan::GetFunction;
 using Nan::New;
-using Nan::Set;
 
 NAN_METHOD(dxt_decompress) {
   Nan::EscapableHandleScope scope;
@@ -51,11 +50,11 @@ NAN_METHOD(dxt_compress) {
 
 NAN_MODULE_INIT(InitAll) {
 
-  Set(target, New<String>("decompress").ToLocalChecked(),
-    GetFunction(New<FunctionTemplate>(dxt_decompress)).ToLocalChecked());
+  Nan::Set(target, Nan::New<String>("decompress").ToLocalChecked(),
+    Nan::GetFunction(New<FunctionTemplate>(dxt_decompress)).ToLocalChecked());
 
-  Set(target, New<String>("compress").ToLocalChecked(),
-    GetFunction(New<FunctionTemplate>(dxt_compress)).ToLocalChecked());
+  Nan::Set(target, Nan::New<String>("compress").ToLocalChecked(),
+    Nan::GetFunction(New<FunctionTemplate>(dxt_compress)).ToLocalChecked());
 }
 
 NODE_MODULE(dxt, InitAll)
