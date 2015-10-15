@@ -4,29 +4,34 @@
 #include "squish/squish.h"
 using namespace v8;
 using namespace node;
+using v8::FunctionTemplate;
+using v8::Handle;
+using v8::Object;
+using v8::String;
+using Nan::GetFunction;
+using Nan::New;
+using Nan::Set;
 
 NAN_METHOD(dxt_decompress) {
-  Nan::HandleScope scope;
-
+  Nan::EscapableHandleScope scope;
   Local<Object> input_buffer = info[0]->ToObject();
   int width = info[1]->Int32Value();
   int height = info[2]->Int32Value();
   int flags = info[3]->Int32Value();
 
   int output_len = width * height * 4;
-  char data[output_len];
+  Nan::MaybeLocal<Object> output_buffer = Nan::NewBuffer(output_len);
 
   squish::u8 *input = (squish::u8*) Buffer::Data(input_buffer);
-  squish::u8 *output = (squish::u8*) data;
+  squish::u8 *output = (squish::u8*) Buffer::Data(output_buffer.ToLocalChecked());
 
   squish::DecompressImage(output, width, height, input, flags);
 
-  MaybeLocal<Object> buffer = Nan::CopyBuffer(data, output_len);
-  info.GetReturnValue().Set(buffer.ToLocalChecked());
+  info.GetReturnValue().Set(scope.Escape(output_buffer.ToLocalChecked()));
 }
 
 NAN_METHOD(dxt_compress) {
-  Nan::HandleScope scope;
+  Nan::EscapableHandleScope scope;
 
   Local<Object> input_buffer = info[0]->ToObject();
   int width = info[1]->Int32Value();
@@ -34,14 +39,23 @@ NAN_METHOD(dxt_compress) {
   int flags = info[3]->Int32Value();
 
   int output_len = squish::GetStorageRequirements(width, height, flags);
-  char data[output_len];
+  Nan::MaybeLocal<Object> output_buffer = Nan::NewBuffer(output_len);
 
   squish::u8 *input = (squish::u8*) Buffer::Data(input_buffer);
-  squish::u8 *output = (squish::u8*) data;
+  squish::u8 *output = (squish::u8*) Buffer::Data(output_buffer.ToLocalChecked());
 
   squish::CompressImage(input, width, height, output, flags);
 
-  MaybeLocal<Object> buffer = Nan::CopyBuffer(data, output_len);
-  info.GetReturnValue().Set(buffer.ToLocalChecked());
+  info.GetReturnValue().Set(scope.Escape(output_buffer.ToLocalChecked()));
 }
 
+NAN_MODULE_INIT(InitAll) {
+
+  Set(target, New<String>("decompress").ToLocalChecked(),
+    GetFunction(New<FunctionTemplate>(dxt_decompress)).ToLocalChecked());
+
+  Set(target, New<String>("compress").ToLocalChecked(),
+    GetFunction(New<FunctionTemplate>(dxt_compress)).ToLocalChecked());
+}
+
+NODE_MODULE(dxt, InitAll)

@@ -13,8 +13,7 @@
         "src/squish/rangefit.cpp",
         "src/squish/singlecolourfit.cpp",
         "src/squish/squish.cpp",
-        "src/dxt.cc",
-        "src/addon.cc"
+        "src/dxt.cc"
       ],
       "include_dirs": ["<!(node -e \"require('nan')\")","src/squish"],
       "cflags!": ["-fno-exceptions"],

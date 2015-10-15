@@ -1,7 +1,7 @@
 var nativeExtension = require('../');
 var assert = require('assert');
 
-describe('native extension', function() {
+describe('dxt', function() {
   it('should export compress that returns a buffer', function() {
     assert.equal(typeof nativeExtension.compress(new Buffer(0), 0, 0), 'object');
   });
