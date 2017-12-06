@@ -1,6 +1,6 @@
 {
   "name": "dxt",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Bindings for the squish DXT compression/decompression library",
   "author": "Alexandre Kirszenberg <a.kirszenberg@gmail.com>",
   "keywords": [
