@@ -5,7 +5,7 @@
 using namespace v8;
 using namespace node;
 using v8::FunctionTemplate;
-using v8::Handle;
+using v8::Local;
 using v8::Object;
 using v8::String;
 using Nan::GetFunction;
@@ -13,10 +13,12 @@ using Nan::New;
 
 NAN_METHOD(dxt_decompress) {
   Nan::EscapableHandleScope scope;
-  Local<Object> input_buffer = info[0]->ToObject();
-  int width = info[1]->Int32Value();
-  int height = info[2]->Int32Value();
-  int flags = info[3]->Int32Value();
+  Isolate *isolate = info.GetIsolate();
+  Local<Context> context = isolate->GetCurrentContext();
+  Local<Object> input_buffer = info[0]->ToObject(context).ToLocalChecked();
+  int width = info[1]->Int32Value(context).FromJust();
+  int height = info[2]->Int32Value(context).FromJust();
+  int flags = info[3]->Int32Value(context).FromJust();
 
   int output_len = width * height * 4;
   Nan::MaybeLocal<Object> output_buffer = Nan::NewBuffer(output_len);
@@ -31,11 +33,12 @@ NAN_METHOD(dxt_decompress) {
 
 NAN_METHOD(dxt_compress) {
   Nan::EscapableHandleScope scope;
-
-  Local<Object> input_buffer = info[0]->ToObject();
-  int width = info[1]->Int32Value();
-  int height = info[2]->Int32Value();
-  int flags = info[3]->Int32Value();
+  Isolate *isolate = info.GetIsolate();
+  Local<Context> context = isolate->GetCurrentContext();
+  Local<Object> input_buffer = info[0]->ToObject(context).ToLocalChecked();
+  int width = info[1]->Int32Value(context).FromJust();
+  int height = info[2]->Int32Value(context).FromJust();
+  int flags = info[3]->Int32Value(context).FromJust();
 
   int output_len = squish::GetStorageRequirements(width, height, flags);
   Nan::MaybeLocal<Object> output_buffer = Nan::NewBuffer(output_len);
